@@ -35,9 +35,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     if (!isLoading && !user) {
       router.push('/login');
-    } else if (!isLoading && user && !user.organization_id && pathname !== '/onboarding') {
+    } else if (!isLoading && user && !user.enterprise_id && pathname !== '/onboarding') {
       router.push('/onboarding');
-    } else if (!isLoading && user && user.organization_id && pathname === '/onboarding') {
+    } else if (!isLoading && user && user.enterprise_id && pathname === '/onboarding') {
       router.push('/dashboard');
     }
   }, [user, isLoading, router, pathname]);
