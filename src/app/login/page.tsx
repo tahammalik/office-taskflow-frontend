@@ -33,7 +33,9 @@ export default function LoginPage() {
       await login(response.data.access_token);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Invalid username or password');
+      // Backend usually returns error in detail or message field
+      const errorMessage = err.response?.data?.detail || err.response?.data?.message || 'Invalid username or password';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -49,39 +51,53 @@ export default function LoginPage() {
       >
         <div className={styles.header}>
           <div className={styles.logo}>
-            <ShieldCheck size={40} color="var(--primary)" />
+            <ShieldCheck size={40} className="text-blue-600" />
           </div>
-          <h1>TaskFlow Enterprise</h1>
-          <p>Securely manage your corporate workflows</p>
+          <h1>TaskFlow</h1>
+          <p>Welcome back! Please sign in to your account.</p>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.inputGroup}>
-            <label>Username</label>
+            <label htmlFor="username">Username</label>
             <input 
+              id="username"
               type="text" 
               value={username} 
               onChange={(e) => setUsername(e.target.value)} 
               placeholder="Enter your username"
               required
+              autoComplete="username"
             />
           </div>
 
           <div className={styles.inputGroup}>
-            <label>Password</label>
+            <label htmlFor="password">Password</label>
             <input 
+              id="password"
               type="password" 
               value={password} 
               onChange={(e) => setPassword(e.target.value)} 
               placeholder="••••••••"
               required
+              autoComplete="current-password"
             />
           </div>
 
-          {error && <div className={styles.error}>{error}</div>}
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className={styles.error}
+            >
+              {error}
+            </motion.div>
+          )}
 
           <button type="submit" disabled={isLoading} className={styles.loginButton}>
-            {isLoading ? 'Authenticating...' : (
+            {isLoading ? (
+              <div className={styles.spinner}></div>
+            ) : (
               <>
                 <LogIn size={20} />
                 Sign In
@@ -91,10 +107,10 @@ export default function LoginPage() {
         </form>
 
         <div className={styles.footer}>
-          <p>Don't have an account?</p>
+          <p>Don't have an account yet?</p>
           <button onClick={() => router.push('/signup')} className={styles.signupLink}>
             <UserPlus size={18} />
-            Create Enterprise Account
+            Create an Account
           </button>
         </div>
       </motion.div>

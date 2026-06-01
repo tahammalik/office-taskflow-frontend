@@ -29,7 +29,9 @@ export default function SignupPage() {
 
       router.push('/login?registered=true');
     } catch (err: any) {
-      setError(err.response?.data?.message || err.response?.data?.detail || 'Failed to create account');
+      // Backend usually returns error in detail or message field
+      const errorMessage = err.response?.data?.detail || err.response?.data?.message || 'Failed to create account';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -50,50 +52,66 @@ export default function SignupPage() {
 
         <div className={styles.header}>
           <div className={styles.logo}>
-            <ShieldCheck size={40} color="var(--primary)" />
+            <ShieldCheck size={40} className="text-blue-600" />
           </div>
-          <h1>Join Enterprise</h1>
-          <p>Create your personal profile to get started</p>
+          <h1>Create Account</h1>
+          <p>Join TaskFlow to manage your projects effectively.</p>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.inputGroup}>
-            <label>Username</label>
+            <label htmlFor="username">Username</label>
             <input 
+              id="username"
               type="text" 
               value={username} 
               onChange={(e) => setUsername(e.target.value)} 
               placeholder="Pick a unique username"
               required
+              autoComplete="username"
             />
           </div>
 
           <div className={styles.inputGroup}>
-            <label>Work Email</label>
+            <label htmlFor="email">Work Email</label>
             <input 
+              id="email"
               type="email" 
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               placeholder="name@company.com"
               required
+              autoComplete="email"
             />
           </div>
 
           <div className={styles.inputGroup}>
-            <label>Password</label>
+            <label htmlFor="password">Password</label>
             <input 
+              id="password"
               type="password" 
               value={password} 
               onChange={(e) => setPassword(e.target.value)} 
               placeholder="Min. 8 characters"
               required
+              autoComplete="new-password"
             />
           </div>
 
-          {error && <div className={styles.error}>{error}</div>}
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className={styles.error}
+            >
+              {error}
+            </motion.div>
+          )}
 
           <button type="submit" disabled={isLoading} className={styles.signupButton}>
-            {isLoading ? 'Creating Account...' : (
+            {isLoading ? (
+              <div className={styles.spinner}></div>
+            ) : (
               <>
                 <UserPlus size={20} />
                 Create Account
